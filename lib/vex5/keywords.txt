@@ -1,0 +1,38 @@
+#######################################
+# Syntax Coloring Map For Vex5
+####################################### 
+#######################################
+# Object
+#######################################
+
+Vex5	KEYWORD1
+Vex5_Motor	KEYWORD1
+
+#######################################
+# Methods and Functions 
+#######################################	
+
+begin	KEYWORD2
+setPower	KEYWORD2 
+setPosition	KEYWORD2
+setSpeed	KEYWORD2
+setMaxCurrent	KEYWORD2
+resetEncoder	KEYWORD2
+getPower	KEYWORD2
+getSpeed	KEYWORD2
+getPosition	KEYWORD2
+updateFirmware	KEYWORD2
+
+VEX5_PORT_NO	LITERAL1
+VEX5_PORT_1	LITERAL1
+VEX5_PORT_2	LITERAL1
+VEX5_PORT_3	LITERAL1
+VEX5_PORT_4	LITERAL1
+VEX5_PORT_5	LITERAL1
+VEX5_PORT_6	LITERAL1
+VEX5_PORT_7	LITERAL1
+VEX5_PORT_8	LITERAL1
+VEX5_PORT_9	LITERAL1
+VEX5_PORT_10	LITERAL1
+VEX5_PORT_11	LITERAL1
+VEX5_PORT_12	LITERAL1
