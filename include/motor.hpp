@@ -33,14 +33,11 @@ public:
     MotorInfoRequired(const MotorInfo& p_info) : info(p_info) {}
 };
 
-class SpeedController : MotorInfoRequired {
+class SpeedController {
 public:
 
-    virtual void setSpeed(Speed) = 0;
-    virtual Speed getSpeed() const = 0;
-    virtual void stop(bool isHard) = 0;
-    
-    using MotorInfoRequired::MotorInfoRequired;
+    virtual util::Error setSpeed(Speed) = 0;
+    virtual util::Result<Speed> getSpeed() const = 0;
     
 };
 
