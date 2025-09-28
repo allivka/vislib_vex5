@@ -50,11 +50,11 @@ public:
 
 class RangedSpeedController : public MotorInfoRequired, public SpeedController {
 protected:
-    virtual util::Error setSpeedNoCheck(Speed) = 0;
+    virtual util::Error setSpeedRaw(Speed) = 0;
 public:
 
     virtual util::Error setSpeed(Speed speed) {
-        return setSpeedNoCheck(info.speedRange.restrict(speed));
+        return setSpeedRaw(info.speedRange.restrict(speed));
     }
 
     virtual bool inSpeedRange(Speed speed) const {

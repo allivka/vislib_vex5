@@ -6,28 +6,35 @@
 
 namespace V5::motor {
 
+util::Error failedMotorConnectionError(util::ErrorCode::failedConnection, "Seems like connection with the Vex5 motor via shield failed");
 
-class V5MotorController : 
-public base::motor::controllers::MotorInfoRequired, 
-public base::motor::controllers::SpeedController,
+class V5MotorController : public base::motor::controllers::RangedSpeedController,
 public base::motor::controllers::InitializationController<VEX5_PORT_t> {
 
-private:
+protected:
     Vex5_Motor motor;
+    
+    virtual util::Error setSpeedRaw(base::motor::Speed speed) {
+        if(motor.setSpeed(speed) == -1) return failedMotorConnectionError;
+        return util::Error();
+    }
 public:
     
-    using MotorInfoRequired::MotorInfoRequired;
+    using RangedSpeedController::RangedSpeedController;
     
-    util::Error init(VEX5_PORT_t port) {
+    virtual util::Error init(VEX5_PORT_t port) {
         if (port < 0 || port > 12) 
             return util::Error(util::ErrorCode::invalidArgument, "Cannot initialize Vex5 motor controller for motor with port out of range [1, 12]");
         if (motor.begin(port) == -1) 
-            return util::Error(util::ErrorCode::failedConnection, "Could not connect to the Vex5 motor with shield");
+            return failedMotorConnectionError;
         return util::Error();
     }
     
-    // util::Error setSpeed(base::motor::Speed speed)
-
+    virtual util::Result<base::motor::Speed> getSpeed() const {
+        base::motor::Speed speed;
+        if(motor.getSpeed(speed) == -1) return failedMotorConnectionError;
+        return speed;
+    }
 };
 
 }

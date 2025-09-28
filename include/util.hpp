@@ -2,7 +2,7 @@
 #define UTIL_HPP
 
 #include <Arduino.h>
-#include <string.h>
+#include <new>
 
 namespace util {
 
@@ -37,10 +37,6 @@ public:
     
 };
 
-int64_t fitInt64ToRange(int64_t value, Range<int64_t> original, Range<int64_t> target) {
-    return map(value, original.lowest, original.highest, target.lowest, target.highest);
-}
-
 enum class ErrorCode {
     success,
     failure,
@@ -73,42 +69,50 @@ public:
         return errcode == err.errcode;
     }
     
-    Error(ErrorCode code = ErrorCode::success, String p_msg = "Default error") : errcode(code), msg(p_msg) {
+    Error() : errcode(ErrorCode::success), msg("Successful operation") {}
+    
+    Error(ErrorCode code, String p_msg = "Default error") : errcode(code), msg(p_msg) {
         if (code == ErrorCode::success) msg = "Successful operation";
         else if(p_msg == "Default error") msg = "Undefined error occur";
     }
+    
 };
 
-template <typename T> class Result {
+template <typename T, typename E> class ReturnResult {
 protected:
-    union {
-        Error err;
-        T value;
-    } data;
-
-    bool errorFlag = false;
     
+    bool errorFlag = false;
+
+    T value;
+    E err;
+
 public:
+    
+    ReturnResult(T v) : errorFlag(false), value(v) { }
+
+    ReturnResult(E e) : errorFlag(true), err(e) { }
     
     bool isError() const {
         return errorFlag;
     }
-    
-    Result(T p) : data(p) {}
-    Result(Error e) : data(e) {
-        errorFlag = true;
-    }
-    
+
     T Value() const {
-        if(!errorFlag) return data.value;
-        else return NULL;
+        if (!errorFlag) return value;
+        return NULL;
     }
-    
-    T Err() const {
-        if(errorFlag) return data.err;
-        else return NULL;
+
+    Error Err() const {
+        if (errorFlag) return err;
+        return NULL;
     }
 };
 
+template <typename T> class Result : public ReturnResult<T, Error> {
+public:
+    Result(T v) :ReturnResult<T, Error>::ReturnResult(v) {}
+    Result(Error e) : ReturnResult<T, Error>::ReturnResult(e) {}
+};
+
 }
+
 #endif
