@@ -14,12 +14,38 @@ public:
     Range() = default;
     Range(const Range&) = default;
     Range(T p_lowest, T p_highest) : lowest(p_lowest), highest(p_highest) {}
+    
+    bool contains(T v) const {
+        return v >= lowest && v <= highest;
+    }
+    
+    T restrict(T v) const {
+        if (v < lowest) {
+            return lowest;
+        }
+        
+        if (v > highest) {
+            return highest;
+        }
+        
+        return v;
+    }
+    
+    T mapValueFromRange(T v, Range<T> r) const {
+        return map(v, r.lowest, r.highest, lowest, highest);
+    }
+    
 };
+
+int64_t fitInt64ToRange(int64_t value, Range<int64_t> original, Range<int64_t> target) {
+    return map(value, original.lowest, original.highest, target.lowest, target.highest);
+}
 
 enum class ErrorCode {
     success,
     failure,
-    invalidArgument
+    invalidArgument,
+    failedConnection
 };
 
 class Error {
@@ -47,7 +73,10 @@ public:
         return errcode == err.errcode;
     }
     
-    Error(ErrorCode code, String p_msg = "Undefined error happened") : errcode(code), msg(p_msg) {}
+    Error(ErrorCode code = ErrorCode::success, String p_msg = "Default error") : errcode(code), msg(p_msg) {
+        if (code == ErrorCode::success) msg = "Successful operation";
+        else if(p_msg == "Default error") msg = "Undefined error occur";
+    }
 };
 
 template <typename T> class Result {
