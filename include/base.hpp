@@ -1,7 +1,8 @@
 #ifndef BASE_HPP
 #define BASE_HPP
 
-#include <arduinoLib.hpp>
+#include "util.hpp"
+
 
 namespace robot::base::motor {
 
@@ -9,14 +10,7 @@ using AnglePosition = int;
 using DistancePosition = int;
 using Speed = int;
 
-class SpeedRange {
-public:
-    Speed lowest = 0;
-    Speed highest = 0;
-    
-    SpeedRange() = default;
-    SpeedRange(Speed p_lowest, Speed p_highest) : lowest(p_lowest), highest(p_highest) {}
-};
+using SpeedRange = util::Range<Speed>;
 
 class MotorInfo {
 public:
@@ -27,13 +21,19 @@ public:
     MotorInfo(AnglePosition p_a, DistancePosition p_d, SpeedRange p_speed) : angle(p_a), distance(p_d), speedRange(p_speed) {}
     
     Speed FitSpeed2Range(Speed speed, SpeedRange range) {
-        return arduino::map(speed, range.lowest, range.highest, speedRange.lowest, speedRange.highest);
+        return map(speed, range.lowest, range.highest, speedRange.lowest, speedRange.highest);
     }
 };
 
 class MotorController {
 public:
-    virtual void setSpeed() = 0;
+
+    MotorInfo info;
+
+    virtual void setSpeed(Speed) = 0;
+    virtual void stop(bool isHard) = 0;
+    
+    MotorController(MotorInfo p_info) : info(p_info) {}
 };
 
 }

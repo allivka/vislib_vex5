@@ -1,4 +1,5 @@
 #include <Vex5.h>
+#include <robot.hpp>
 
 Vex5_Motor motor;
 
