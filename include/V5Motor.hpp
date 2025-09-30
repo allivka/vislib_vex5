@@ -31,9 +31,9 @@ public:
     }
     
     virtual util::Result<base::motor::Speed> getSpeed() const {
-        base::motor::Speed speed;
-        if(motor.getSpeed(speed) == -1) return failedMotorConnectionError;
-        return speed;
+        // base::motor::Speed speed;
+        // if(motor.getSpeed(speed) == -1) return failedMotorConnectionError;
+        return motor.getSpeed();
     }
 };
 

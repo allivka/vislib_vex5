@@ -52,6 +52,8 @@ class RangedSpeedController : public MotorInfoRequired, public SpeedController {
 protected:
     virtual util::Error setSpeedRaw(Speed) = 0;
 public:
+    
+    RangedSpeedController(const MotorInfo& p_info) : MotorInfoRequired(p_info) {}
 
     virtual util::Error setSpeed(Speed speed) {
         return setSpeedRaw(info.speedRange.restrict(speed));

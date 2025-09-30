@@ -98,12 +98,12 @@ public:
 
     T Value() const {
         if (!errorFlag) return value;
-        return NULL;
+        return T();
     }
 
     Error Err() const {
         if (errorFlag) return err;
-        return NULL;
+        return E();
     }
 };
 

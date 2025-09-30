@@ -1,12 +1,30 @@
 #include "visioner.hpp"
 
-Vex5_Motor motor;
+V5::motor::V5MotorController motor(base::motor::MotorInfo(0, 0, 0, base::motor::SpeedRange(-1500, 1500)));
 
-void setup() {
+void setup() {  
     Vex5.begin();
-    motor.begin(VEX5_PORT_1);
+    motor.init(VEX5_PORT_1);
+    Serial.begin(9600);
 }
 
+int limit = 1500;
+
 void loop() {
-    motor.setSpeed(200);
+    for (int i = -limit; i <= limit; i += 10) {
+        motor.setSpeed(i);
+        Serial.print("i: ");
+        Serial.print(i);
+        Serial.print("; real: ");
+        Serial.println(motor.getSpeed().Value());
+        delay(100);
+    }
+    for (int i = limit; i >= -limit; i -= 10) {
+        motor.setSpeed(i);
+        Serial.print("i: ");
+        Serial.print(i);
+        Serial.print("; real: ");
+        Serial.println(motor.getSpeed().Value());
+        delay(100);
+    }
 }
