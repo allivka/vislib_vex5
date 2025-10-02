@@ -2,9 +2,8 @@
 #define UTIL_HPP
 
 #include <Arduino.h>
-#include <new>
 
-namespace util {
+namespace vislib::util {
 
 template <typename T> class Range {
 public:

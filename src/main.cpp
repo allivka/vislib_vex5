@@ -1,6 +1,6 @@
 #include "visioner.hpp"
 
-V5::motor::V5MotorController motor(base::motor::MotorInfo(0, 0, 0, base::motor::SpeedRange(-1500, 1500)));
+V5::motor::V5MotorController motor(vislib::motor::MotorInfo(0, 0, 0, vislib::motor::SpeedRange(-1500, 1500)));
 
 void setup() {  
     Vex5.begin();

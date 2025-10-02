@@ -3,7 +3,7 @@
 
 #include "util.hpp"
 
-namespace base::motor {
+namespace vislib::motor {
 
 using AnglePosition = int;
 using AngleDirection = int;
