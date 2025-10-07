@@ -34,6 +34,9 @@ protected:
     MotorInfo info;
 public:
     MotorInfoRequired(const MotorInfo& p_info) : info(p_info) {}
+    MotorInfo Info() {
+        return info;
+    }
 };
 
 template <typename T> class InitializationController {

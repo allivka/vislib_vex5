@@ -58,34 +58,136 @@ namespace exceptions {
             return "Failed accessing array element at index out of range: " + msg;
         }
     };
+    
+    class NullptrAccess : public Exception {
+    public:
+        using Exception::Exception;
+        String what() {
+            return "Failed accessing aobject at nullptr address: " + msg;
+        }
+    };
 }
 
-template<typename T, size_t SIZE>
+template<typename T>
 class Array {
+private:
+    T *data = nullptr;
+    size_t size = 0;
+public:
+    
+    Array(size_t p_size) : size(p_size) {
+        data = new T[size];
+        for(size_t i = 0; i < size; i++) {
+            data[i] = T();
+        }
+    }
+    
+    Array(const T p_data[], size_t p_size) : size(p_size), data(new T[size]) {
+        for(size_t i = 0; i < size; i++) {
+            data[i] = p_data[i];
+        }
+    }
+    
+    Array(const Array<T>& other) : size(other.size), data(new T[size]) {
+        
+        for(size_t i = 0; i < size; i++) {
+            data[i] = other.data[i];
+        }
+    }
+    
+    Array(Array<T>&& other) : size(other.size), data(other.data) {
+        other.size = 0;
+        other.data = nullptr;
+    }
+    
+    ~Array() {
+        delete [] data;
+    }
+    
+    Array<T>& operator=(const Array<T>& other) {
+        if (this == &other) return *this;
+        
+        T *newData = new T[other.size];
+        
+        for(size_t i = 0; i < other.size; i++) {
+            newData[i] = other.data[i];
+        }
+        
+        delete [] data;
+        data = newData;
+        size = other.size;
+        
+        return *this;
+        
+    }
+    
+    T& operator[](size_t index) {
+        return data[index];
+    }
+    
+    const T& operator[](size_t index) const {
+        return data[index];
+    }
+    
+    T& at(size_t index) {
+        if (data == nullptr) {
+            throw exceptions::NullptrAccess("could not access data of array as it was cleared");
+        }
+        
+        if (index >= size) {
+            throw exceptions::IndexOutOfRange();
+        }
+        
+        return data[index];
+    }
+    
+    const T& at(size_t index) const {
+        if (data == nullptr) {
+            throw exceptions::NullptrAccess("could not access data of array as it was cleared");
+        }
+        
+        if (index >= size) {
+            throw exceptions::IndexOutOfRange();
+        }
+        return data[index];
+    }
+    
+    size_t Size() const { return size; }
+    bool empty() const { return size == 0; }
+    void clear() {
+        delete [] data;
+        size = 0;
+        data = nullptr;
+    }
+    
+};
+
+template<typename T, size_t SIZE>
+class DefinedArray {
 private:
     T data[SIZE];
 
 public:
     
-    Array() {
+    DefinedArray() {
         for(size_t i = 0; i < SIZE; i++) {
             data[i] = T();
         }
     }
     
-    Array(const T (&p_data)[SIZE]) {
+    DefinedArray(const T (&p_data)[SIZE]) {
         for(size_t i = 0; i < SIZE; i++) {
             data[i] = p_data[i];
         }
     }
     
-    Array(const Array<T, SIZE>& other) {
+    DefinedArray(const DefinedArray<T, SIZE>& other) {
         for(size_t i = 0; i < SIZE; i++) {
             data[i] = other.data[i];
         }
     }
     
-    Array<T, SIZE>& operator=(const Array<T, SIZE>& other) {
+    DefinedArray<T, SIZE>& operator=(const DefinedArray<T, SIZE>& other) {
         if (this != &other) {
             for(size_t i = 0; i < SIZE; i++) {
                 data[i] = other.data[i];
@@ -104,20 +206,20 @@ public:
     
     T& at(size_t index) {
         if (index >= SIZE) {
-            throw std::out_of_range("Index out of range");
+            throw exceptions::IndexOutOfRange("Index out of range");
         }
         return data[index];
     }
     
     const T& at(size_t index) const {
         if (index >= SIZE) {
-            throw std::out_of_range("Index out of range");
+            throw exceptions::IndexOutOfRange("Index out of range");
         }
         return data[index];
     }
     
     constexpr size_t size() const { return SIZE; }
-    bool empty() const { return SIZE == 0; }
+    constexpr bool empty() const { return SIZE == 0; }
     
 };
 
