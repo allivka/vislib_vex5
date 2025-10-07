@@ -1,7 +1,7 @@
 #ifndef V5_MOTOR_HPP
 #define V5_MOTOR_HPP
 
-#include <vislib.hpp>
+#include <vislib/vislib.hpp>
 #include "Vex5.h"
 
 namespace V5::motor {
