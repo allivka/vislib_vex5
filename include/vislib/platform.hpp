@@ -10,7 +10,6 @@ template<size_t MOTORCOUNT> class PlatformInfo : public util::Array<motor::Motor
 };
 
 namespace controllers {
-
 }
 }
 

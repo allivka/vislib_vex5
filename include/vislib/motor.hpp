@@ -31,7 +31,7 @@ namespace controllers {
 
 class MotorInfoRequired {
 protected:
-    const MotorInfo& info;
+    MotorInfo info;
 public:
     MotorInfoRequired(const MotorInfo& p_info) : info(p_info) {}
 };
