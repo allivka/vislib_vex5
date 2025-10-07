@@ -36,6 +36,91 @@ public:
     
 };
 
+class Exception {
+protected:
+    String msg;
+public:
+    Exception() = default;
+    Exception(const String& p) : msg(p) {}
+    Exception(const Exception&) = default;
+    Exception(Exception&&) = default;
+    
+    String what() {
+        return msg;
+    }
+};
+
+namespace exceptions {
+    class IndexOutOfRange : public Exception {
+    public:
+        using Exception::Exception;
+        String what() {
+            return "Failed accessing array element at index out of range: " + msg;
+        }
+    };
+}
+
+template<typename T, size_t SIZE>
+class Array {
+private:
+    T data[SIZE];
+
+public:
+    
+    Array() {
+        for(size_t i = 0; i < SIZE; i++) {
+            data[i] = T();
+        }
+    }
+    
+    Array(const T (&p_data)[SIZE]) {
+        for(size_t i = 0; i < SIZE; i++) {
+            data[i] = p_data[i];
+        }
+    }
+    
+    Array(const Array<T, SIZE>& other) {
+        for(size_t i = 0; i < SIZE; i++) {
+            data[i] = other.data[i];
+        }
+    }
+    
+    Array<T, SIZE>& operator=(const Array<T, SIZE>& other) {
+        if (this != &other) {
+            for(size_t i = 0; i < SIZE; i++) {
+                data[i] = other.data[i];
+            }
+        }
+        return *this;
+    }
+    
+    T& operator[](size_t index) {
+        return data[index];
+    }
+    
+    const T& operator[](size_t index) const {
+        return data[index];
+    }
+    
+    T& at(size_t index) {
+        if (index >= SIZE) {
+            throw std::out_of_range("Index out of range");
+        }
+        return data[index];
+    }
+    
+    const T& at(size_t index) const {
+        if (index >= SIZE) {
+            throw std::out_of_range("Index out of range");
+        }
+        return data[index];
+    }
+    
+    constexpr size_t size() const { return SIZE; }
+    bool empty() const { return SIZE == 0; }
+    
+};
+
 enum class ErrorCode {
     success,
     failure,
