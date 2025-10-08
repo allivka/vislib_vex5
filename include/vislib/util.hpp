@@ -316,6 +316,10 @@ public:
         return msg.c_str();
     }
     
+    explicit virtual operator bool() {
+        return errcode != ErrorCode::success;
+    }
+    
     virtual bool operator==(const Error& err) const {
         return errcode == err.errcode;
     }
