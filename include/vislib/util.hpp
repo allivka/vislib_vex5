@@ -1,7 +1,7 @@
 #ifndef UTIL_HPP
 #define UTIL_HPP
 
-#include <Arduino.h>
+#include "types.hpp"
 
 namespace vislib::util {
 
@@ -9,6 +9,14 @@ template <typename T> class Range {
 public:
     T lowest = 0;
     T highest = 0;
+    
+    template<typename D> static D map(D x, D in_min, D in_max, D out_min, D out_max) {
+        return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+    }
+    
+    template<typename D> static D map(D x, const Range<D>& in, const Range<D>& out) {
+        return map(x, in.lowest, in.highest, out.lowest, out.highest);
+    }
     
     Range() = default;
     Range(const Range&) = default;
@@ -31,7 +39,11 @@ public:
     }
     
     T mapValueFromRange(T v, Range<T> r) const {
-        return map(v, r.lowest, r.highest, lowest, highest);
+        return map(v, r, *this);
+    }
+    
+    T mapValueToRange(T v, Range<T> r) const {
+        return map(v, *this, r);
     }
     
 };
@@ -68,18 +80,79 @@ namespace exceptions {
     };
 }
 
+template<typename T, size_t SIZE> class DefinedArray {
+private:
+    T data[SIZE];
+
+public:
+    
+    DefinedArray() {
+        for(size_t i = 0; i < SIZE; i++) {
+            data[i] = T();
+        }
+    }
+    
+    DefinedArray(const T (&p_data)[SIZE]) {
+        for(size_t i = 0; i < SIZE; i++) {
+            data[i] = p_data[i];
+        }
+    }
+    
+    DefinedArray(const DefinedArray<T, SIZE>& other) {
+        for(size_t i = 0; i < SIZE; i++) {
+            data[i] = other.data[i];
+        }
+    }
+    
+    DefinedArray(DefinedArray<T, SIZE>&& other) = default;
+    
+    DefinedArray<T, SIZE>& operator=(DefinedArray<T, SIZE>&& other) = default;
+    
+    DefinedArray<T, SIZE>& operator=(const DefinedArray<T, SIZE>& other) {
+        if (this != &other) {
+            for(size_t i = 0; i < SIZE; i++) {
+                data[i] = other.data[i];
+            }
+        }
+        return *this;
+    }
+    
+    T& operator[](size_t index) {
+        return data[index];
+    }
+    
+    const T& operator[](size_t index) const {
+        return data[index];
+    }
+    
+    T& at(size_t index) {
+        if (index >= SIZE) {
+            throw exceptions::IndexOutOfRange("Index out of range");
+        }
+        return data[index];
+    }
+    
+    const T& at(size_t index) const {
+        if (index >= SIZE) {
+            throw exceptions::IndexOutOfRange("Index out of range");
+        }
+        return data[index];
+    }
+    
+    constexpr size_t size() const { return SIZE; }
+    constexpr bool empty() const { return SIZE == 0; }
+    
+};
+
 template<typename T> class Array {
 private:
     T *data = nullptr;
     size_t size = 0;
 public:
     
-    Array(size_t p_size) : size(p_size) {
-        data = new T[size];
-        for(size_t i = 0; i < size; i++) {
-            data[i] = T();
-        }
-    }
+    Array() = default;
+
+    Array(size_t p_size) : size(p_size), data(new T[size]) { }
     
     Array(const T p_data[], size_t p_size) : size(p_size), data(new T[size]) {
         for(size_t i = 0; i < size; i++) {
@@ -106,6 +179,11 @@ public:
     Array<T>& operator=(const Array<T>& other) {
         if (this == &other) return *this;
         
+        if (other.data == nullptr || other.size == 0) {
+            clear();
+            return *this;
+        }
+        
         T *newData = new T[other.size];
         
         for(size_t i = 0; i < other.size; i++) {
@@ -118,6 +196,31 @@ public:
         
         return *this;
         
+    }
+    
+    Array<T>& operator=(Array<T>&& other) {
+        if (this != &other) {
+            delete[] data;
+            data = other.data;
+            size = other.size;
+            other.data = nullptr;
+            other.size = 0;
+        }
+        return *this;
+    }
+    
+    bool operator==(const Array<T>& other) {
+        if (size != other.size) return false;
+        if(data == other.data && data == nullptr) {
+            return true;
+        }
+        if((data == nullptr || other.data == nullptr) && data != other.data) return false;
+        
+        for(size_t i = 0; i < size; i++) {
+            if (data[i] != other.data[i]) return false;
+        }
+        
+        return true;
     }
     
     T& operator[](size_t index) {
@@ -159,66 +262,34 @@ public:
         data = nullptr;
     }
     
+    T* Data() {
+        return data;
+    }
+    
+    const T* Data() const {
+        return data;
+    }
+    
+    Array<T> operator+(const Array<T>& other) {
+        Array<T> newArr;
+        newArr.size = size + other.size;
+        newArr.data = new T[newArr.size]();
+        for(size_t i = 0; i < size; i++) {
+            newArr.data[i] = data[i];
+        }
+        
+        for(size_t i = 0; i < other.size; i++) {
+            newArr.data[size + i] = other.data[i];
+        }
+        
+        return newArr;
+    }
+    
 };
 
-template<typename T, size_t SIZE> class DefinedArray {
-private:
-    T data[SIZE];
-
+template<typename CT = const char> class String : public Array<CT> {
 public:
-    
-    DefinedArray() {
-        for(size_t i = 0; i < SIZE; i++) {
-            data[i] = T();
-        }
-    }
-    
-    DefinedArray(const T (&p_data)[SIZE]) {
-        for(size_t i = 0; i < SIZE; i++) {
-            data[i] = p_data[i];
-        }
-    }
-    
-    DefinedArray(const DefinedArray<T, SIZE>& other) {
-        for(size_t i = 0; i < SIZE; i++) {
-            data[i] = other.data[i];
-        }
-    }
-    
-    DefinedArray<T, SIZE>& operator=(const DefinedArray<T, SIZE>& other) {
-        if (this != &other) {
-            for(size_t i = 0; i < SIZE; i++) {
-                data[i] = other.data[i];
-            }
-        }
-        return *this;
-    }
-    
-    T& operator[](size_t index) {
-        return data[index];
-    }
-    
-    const T& operator[](size_t index) const {
-        return data[index];
-    }
-    
-    T& at(size_t index) {
-        if (index >= SIZE) {
-            throw exceptions::IndexOutOfRange("Index out of range");
-        }
-        return data[index];
-    }
-    
-    const T& at(size_t index) const {
-        if (index >= SIZE) {
-            throw exceptions::IndexOutOfRange("Index out of range");
-        }
-        return data[index];
-    }
-    
-    constexpr size_t size() const { return SIZE; }
-    constexpr bool empty() const { return SIZE == 0; }
-    
+    using Array<CT>::Array;
 };
 
 template<typename T> class UniquePtr {

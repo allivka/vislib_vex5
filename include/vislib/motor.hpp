@@ -5,26 +5,24 @@
 
 namespace vislib::motor {
 
-using AnglePosition = int;
-using AngleDirection = int;
-using DistancePosition = int;
-using Speed = int;
+using Speed = double;
+using AngularSpeed = double;
 
 using SpeedRange = util::Range<Speed>;
+using AngularSpeedRange = util::Range<double>;
 
 class MotorInfo {
 public:
-    AnglePosition anglePos = 0;
-    AngleDirection angleDir = 0;
-    DistancePosition distance = 0;
+    double anglePos = 0;
+    double angleDir = 0;
+    double distance = 0;
     SpeedRange speedRange;
+    AngularSpeedRange angularSpeedRange;
+    bool isReversed = false;
     
-    MotorInfo(AnglePosition p_ap, AngleDirection p_ad, DistancePosition p_d, SpeedRange p_speed)
-    : anglePos(p_ap), angleDir(p_ad), distance(p_d), speedRange(p_speed) {}
+    MotorInfo(int p_ap, int p_ad, int p_d, SpeedRange p_speed, AngularSpeedRange p_angSpeed, bool p_reversed)
+    : anglePos(p_ap), angleDir(p_ad), distance(p_d), speedRange(p_speed), angularSpeedRange(p_angSpeed), isReversed(p_reversed) {}
     
-    Speed FitSpeed2Range(Speed speed, SpeedRange range) {
-        return map(speed, range.lowest, range.highest, speedRange.lowest, speedRange.highest);
-    }
 };
 
 namespace controllers {
