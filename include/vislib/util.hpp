@@ -48,36 +48,11 @@ public:
     
 };
 
-class Exception {
-protected:
-    String msg;
-public:
-    Exception() = default;
-    Exception(const String& p) : msg(p) {}
-    Exception(const Exception&) = default;
-    Exception(Exception&&) = default;
-    
-    String what() {
-        return msg;
-    }
-};
-
+class String;
+class Exception;
 namespace exceptions {
-    class IndexOutOfRange : public Exception {
-    public:
-        using Exception::Exception;
-        String what() {
-            return "Failed accessing array element at index out of range: " + msg;
-        }
-    };
-    
-    class NullptrAccess : public Exception {
-    public:
-        using Exception::Exception;
-        String what() {
-            return "Failed accessing aobject at nullptr address: " + msg;
-        }
-    };
+    class IndexOutOfRange;
+    class NullptrAccess;
 }
 
 template<typename T, size_t SIZE> class DefinedArray {
@@ -146,8 +121,9 @@ public:
 
 template<typename T> class Array {
 private:
-    T *data = nullptr;
     size_t size = 0;
+    T *data = nullptr;
+    
 public:
     
     Array() = default;
@@ -209,7 +185,7 @@ public:
         return *this;
     }
     
-    bool operator==(const Array<T>& other) {
+    bool operator==(const Array<T>& other) const {
         if (size != other.size) return false;
         if(data == other.data && data == nullptr) {
             return true;
@@ -270,10 +246,10 @@ public:
         return data;
     }
     
-    Array<T> operator+(const Array<T>& other) {
+    Array<T> operator+(const Array<T>& other) const {
         Array<T> newArr;
         newArr.size = size + other.size;
-        newArr.data = new T[newArr.size]();
+        newArr.data = new T[newArr.size];
         for(size_t i = 0; i < size; i++) {
             newArr.data[i] = data[i];
         }
@@ -287,10 +263,128 @@ public:
     
 };
 
-template<typename CT = const char> class String : public Array<CT> {
+class String : public Array<char> {
+private:
+    static size_t strlen(const char* str) {
+        if (!str) return 0;
+        const char* ptr = str;
+        while (*ptr) ptr++;
+        return ptr - str;
+    }
+
 public:
-    using Array<CT>::Array;
+    String() : Array<char>() {}
+    
+    String(const char* cstr) : Array<char>(cstr, strlen(cstr)) {}
+    
+    String(const char* cstr, size_t length) : Array<char>(cstr, length) {}
+    
+    String(size_t count, char ch) : Array<char>(count) {
+        for (size_t i = 0; i < count; i++) {
+            (*this)[i] = ch;
+        }
+    }
+    
+    using Array<char>::Array;
+    using Array<char>::operator=;
+    
+    const char* c_str() const {
+        return Data();
+    }
+    
+    size_t length() const {
+        return Size();
+    }
+    
+    String operator+(const String& other) const {
+        String result;
+        Array<char>& base = result;
+        base = Array<char>::operator+(other);
+        return result;
+    }
+    
+    String operator+(const char* other) const {
+        String temp(other);
+        return *this + temp;
+    }
+    
+    String& operator+=(const String& other) {
+        *this = *this + other;
+        return *this;
+    }
+    
+    String& operator+=(const char* other) {
+        *this = *this + other;
+        return *this;
+    }
+    
+    bool operator==(const String& other) const {
+        return Array<char>::operator==(other);
+    }
+    
+    bool operator==(const char* other) const {
+        size_t other_len = strlen(other);
+        if (Size() != other_len) return false;
+        
+        for (size_t i = 0; i < Size(); i++) {
+            if ((*this)[i] != other[i]) return false;
+        }
+        return true;
+    }
+    
+    bool operator!=(const String& other) const {
+        return !(*this == other);
+    }
+    
+    bool operator!=(const char* other) const {
+        return !(*this == other);
+    }
 };
+
+class Exception {
+protected:
+    String msg;
+public:
+    Exception() = default;
+    Exception(const String& p) : msg(p) {}
+    Exception(const Exception&) = default;
+    Exception(Exception&&) = default;
+    
+    String what() {
+        return msg;
+    }
+};
+
+namespace exceptions {
+    class IndexOutOfRange : public Exception {
+    public:
+        using Exception::Exception;
+        String what() {
+            return String("Failed accessing array element at index out of range: ") + msg;
+        }
+    };
+    
+    class NullptrAccess : public Exception {
+    public:
+        using Exception::Exception;
+        String what() {
+            return String("Failed accessing object at nullptr address: ") + msg;
+        }
+    };
+}
+
+inline bool operator==(const char* lhs, const String& rhs) {
+    return rhs == lhs;
+}
+
+inline bool operator!=(const char* lhs, const String& rhs) {
+    return !(rhs == lhs);
+}
+
+inline String operator+(const char* lhs, const String& rhs) {
+    String temp(lhs);
+    return temp + rhs;
+}
 
 template<typename T> class UniquePtr {
 protected:
@@ -371,23 +465,23 @@ public:
     ErrorCode errcode;
     String msg = "Success";
     
-    virtual operator ErrorCode() {
+    operator ErrorCode() {
         return errcode;
     }
     
-    virtual operator int64_t() {
-        return static_cast<int64_t>(errcode);
+    operator ll_t() {
+        return static_cast<ll_t>(errcode);
     }
     
-    virtual operator String() {
+    operator String() {
         return msg;
     }
     
-    virtual operator const char*() {
+    operator const char*() {
         return msg.c_str();
     }
     
-    explicit virtual operator bool() {
+    explicit operator bool() {
         return errcode != ErrorCode::success;
     }
     
@@ -427,7 +521,7 @@ public:
         return T();
     }
 
-    Error Err() const {
+    E Err() const {
         if (errorFlag) return err;
         return E();
     }
@@ -435,8 +529,8 @@ public:
 
 template <typename T> class Result : public ReturnResult<T, Error> {
 public:
-    Result(T v) :ReturnResult<T, Error>::ReturnResult(v) {}
-    Result(Error e) : ReturnResult<T, Error>::ReturnResult(e) {}
+    Result(T v) : ReturnResult<T, Error>(v) {}
+    Result(Error e) : ReturnResult<T, Error>(e) {}
 };
 
 }

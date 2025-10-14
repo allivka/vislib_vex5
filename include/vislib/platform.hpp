@@ -45,6 +45,13 @@ public:
             }
         }
     }
+    
+    ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    void init(const util::Array<int>& ports) {
+        for(size_t i = 0; i < controllers.Size(); i++) {
+            controllers.at(i).init(ports.at(i));
+        }
+    }
 };
 
 
