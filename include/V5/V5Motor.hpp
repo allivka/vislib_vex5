@@ -22,6 +22,9 @@ public:
     
     using RangedSpeedController::RangedSpeedController;
     
+    ///!!!!!!!!!!!!!
+    V5MotorController() {};
+    
     virtual vislib::util::Error init(VEX5_PORT_t port) {
         if (port < 0 || port > 12) 
             return vislib::util::Error(vislib::util::ErrorCode::invalidArgument, "Cannot initialize Vex5 motor controller for motor with port out of range [1, 12]");

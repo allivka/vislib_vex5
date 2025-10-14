@@ -14,14 +14,15 @@ using AngularSpeedRange = util::Range<double>;
 class MotorInfo {
 public:
     double anglePos = 0;
-    double angleDir = 0;
     double distance = 0;
     SpeedRange speedRange;
     AngularSpeedRange angularSpeedRange;
     bool isReversed = false;
     
-    MotorInfo(int p_ap, int p_ad, int p_d, SpeedRange p_speed, AngularSpeedRange p_angSpeed, bool p_reversed)
-    : anglePos(p_ap), angleDir(p_ad), distance(p_d), speedRange(p_speed), angularSpeedRange(p_angSpeed), isReversed(p_reversed) {}
+    MotorInfo() = default;
+    
+    MotorInfo(int p_ap, int p_d, SpeedRange p_speed, AngularSpeedRange p_angSpeed, bool p_reversed = false)
+    : anglePos(p_ap), distance(p_d), speedRange(p_speed), angularSpeedRange(p_angSpeed), isReversed(p_reversed) {}
     
 };
 
@@ -31,6 +32,10 @@ class MotorInfoRequired {
 protected:
     MotorInfo info;
 public:
+
+    //!!!!!!!!!!!!!!!!!!!
+    MotorInfoRequired() {};
+    
     MotorInfoRequired(const MotorInfo& p_info) : info(p_info) {}
     MotorInfo Info() {
         return info;
@@ -55,7 +60,10 @@ protected:
 public:
     
     RangedSpeedController(const MotorInfo& p_info) : MotorInfoRequired(p_info) {}
-
+    
+    //!!!!!!!!!!!!!!!!
+    RangedSpeedController() {};
+    
     virtual util::Error setSpeed(Speed speed) {
         return setSpeedRaw(info.speedRange.restrict(speed));
     }

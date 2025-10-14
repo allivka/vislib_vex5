@@ -31,6 +31,8 @@ public:
                 return err;
             }
         }
+        
+        return util::ErrorCode::success;
     }
     
     util::Error setSpeedsInRange(PlatformMotorSpeeds speeds, motor::SpeedRange range) {
