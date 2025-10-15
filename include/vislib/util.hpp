@@ -6,6 +6,7 @@
 namespace vislib::util {
 
 template <typename T> class Range {
+
 public:
     T lowest = 0;
     T highest = 0;
@@ -48,12 +49,17 @@ public:
     
 };
 
-class String;
-class Exception;
-namespace exceptions {
-    class IndexOutOfRange;
-    class NullptrAccess;
-}
+enum class ErrorCode {
+    success,
+    failure,
+    invalidArgument,
+    failedConnection,
+    indexOutOfRange,
+    emptyArray
+};
+
+class Error;
+template<typename T> class Result;
 
 template<typename T, size_t SIZE> class DefinedArray {
 private:
@@ -100,16 +106,16 @@ public:
         return data[index];
     }
     
-    T& at(size_t index) {
+    Result<T>& at(size_t index) {
         if (index >= SIZE) {
-            throw exceptions::IndexOutOfRange("Index out of range");
+            throw Error(ErrorCode::indexOutOfRange, "Index out of range in 'defined array' element access");
         }
         return data[index];
     }
     
-    const T& at(size_t index) const {
+    Result<const T&> at(size_t index) const {
         if (index >= SIZE) {
-            throw exceptions::IndexOutOfRange("Index out of range");
+            throw Error(ErrorCode::indexOutOfRange, "Index out of range in 'defined array' element access");
         }
         return data[index];
     }
@@ -207,25 +213,25 @@ public:
         return data[index];
     }
     
-    T& at(size_t index) {
+    Result<T&> at(size_t index) {
         if (data == nullptr) {
-            throw exceptions::NullptrAccess("could not access data of array as it was cleared");
+            throw Error(ErrorCode::emptyArray, "could not access data of an empty array");
         }
         
         if (index >= size) {
-            throw exceptions::IndexOutOfRange();
+            throw Error(ErrorCode::indexOutOfRange, "index out of range in array element access");
         }
         
         return data[index];
     }
     
-    const T& at(size_t index) const {
+    Result<const T&> at(size_t index) const {
         if (data == nullptr) {
-            throw exceptions::NullptrAccess("could not access data of array as it was cleared");
+            throw Error(ErrorCode::emptyArray, "could not access data of an empty array");
         }
         
         if (index >= size) {
-            throw exceptions::IndexOutOfRange();
+            throw Error(ErrorCode::indexOutOfRange, "index out of range in array element access");
         }
         return data[index];
     }
@@ -341,38 +347,6 @@ public:
     }
 };
 
-class Exception {
-protected:
-    String msg;
-public:
-    Exception() = default;
-    Exception(const String& p) : msg(p) {}
-    Exception(const Exception&) = default;
-    Exception(Exception&&) = default;
-    
-    String what() {
-        return msg;
-    }
-};
-
-namespace exceptions {
-    class IndexOutOfRange : public Exception {
-    public:
-        using Exception::Exception;
-        String what() {
-            return String("Failed accessing array element at index out of range: ") + msg;
-        }
-    };
-    
-    class NullptrAccess : public Exception {
-    public:
-        using Exception::Exception;
-        String what() {
-            return String("Failed accessing object at nullptr address: ") + msg;
-        }
-    };
-}
-
 inline bool operator==(const char* lhs, const String& rhs) {
     return rhs == lhs;
 }
@@ -451,13 +425,6 @@ public:
         ptr = new_ptr;
     }
     
-};
-
-enum class ErrorCode {
-    success,
-    failure,
-    invalidArgument,
-    failedConnection
 };
 
 class Error {
