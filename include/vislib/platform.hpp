@@ -16,7 +16,7 @@ public:
     Platform(PlatformMotorConfig configuration) {
         controllers = util::Array<Controller>(configuration.Size());
         for (size_t i = 0; i < controllers.Size(); i++) {
-            controllers.at(i) = Controller(configuration.at(i));
+            controllers.at(i)() = Controller(configuration.at(i));
         }
     }
     

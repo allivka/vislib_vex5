@@ -215,11 +215,11 @@ public:
     
     Result<T&> at(size_t index) {
         if (data == nullptr) {
-            throw Error(ErrorCode::emptyArray, "could not access data of an empty array");
+            return Error(ErrorCode::emptyArray, "could not access data of an empty array");
         }
         
         if (index >= size) {
-            throw Error(ErrorCode::indexOutOfRange, "index out of range in array element access");
+            return Error(ErrorCode::indexOutOfRange, "index out of range in array element access");
         }
         
         return data[index];
@@ -227,11 +227,11 @@ public:
     
     Result<const T&> at(size_t index) const {
         if (data == nullptr) {
-            throw Error(ErrorCode::emptyArray, "could not access data of an empty array");
+            return Error(ErrorCode::emptyArray, "could not access data of an empty array");
         }
         
         if (index >= size) {
-            throw Error(ErrorCode::indexOutOfRange, "index out of range in array element access");
+            return Error(ErrorCode::indexOutOfRange, "index out of range in array element access");
         }
         return data[index];
     }
