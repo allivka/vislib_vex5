@@ -406,7 +406,11 @@ public:
     }
     
     UniquePtr<T>& operator=(const T& v) {
-        *ptr = v;
+        if(ptr == nullptr) {
+            ptr = new T(v);
+        } else {
+            *ptr = v;
+        }
         return *this;
     }
     
@@ -478,19 +482,45 @@ public:
     ReturnResult(T v) : errorFlag(false), value(v) { }
 
     ReturnResult(E e) : errorFlag(true), err(e) { }
-    
+
     bool isError() const {
         return errorFlag;
     }
 
+    bool getValue(T& out) const {
+        if (!errorFlag) {
+            out = value;
+            return true;
+        }
+        return false;
+    }
+
+    bool getError(E& out) const {
+        if (errorFlag) {
+            out = err;
+            return true;
+        }
+        return false;
+    }
+
+    operator T() const {
+        return value;
+    }
+
+    operator E() const {
+        return err;
+    }
+
+    T operator()() {
+        return value;
+    }
+
     T Value() const {
-        if (!errorFlag) return value;
-        return T();
+        return value;
     }
 
     E Err() const {
-        if (errorFlag) return err;
-        return E();
+        return err;
     }
 };
 

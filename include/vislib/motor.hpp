@@ -28,15 +28,14 @@ public:
 
 namespace controllers {
 
-class MotorInfoRequired {
+class MotorInfoIncluded {
 protected:
     MotorInfo info;
 public:
-
-    //!!!!!!!!!!!!!!!!!!!
-    MotorInfoRequired() {};
     
-    MotorInfoRequired(const MotorInfo& p_info) : info(p_info) {}
+    MotorInfoIncluded() = default;
+    
+    MotorInfoIncluded(const MotorInfo& p_info) : info(p_info) {}
     MotorInfo Info() {
         return info;
     }
@@ -54,15 +53,11 @@ public:
     
 };
 
-class RangedSpeedController : public MotorInfoRequired, public SpeedController {
+class RangedSpeedController : public MotorInfoIncluded, public SpeedController {
 protected:
     virtual util::Error setSpeedRaw(Speed) = 0;
 public:
-    
-    RangedSpeedController(const MotorInfo& p_info) : MotorInfoRequired(p_info) {}
-    
-    //!!!!!!!!!!!!!!!!
-    RangedSpeedController() {};
+    using MotorInfoIncluded::MotorInfoIncluded;
     
     virtual util::Error setSpeed(Speed speed) {
         return setSpeedRaw(info.speedRange.restrict(speed));

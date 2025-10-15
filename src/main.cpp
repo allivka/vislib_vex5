@@ -9,11 +9,11 @@ motor::MotorInfo(0, 0, motor::SpeedRange(-1500, 1500), motor::AngularSpeedRange(
 
 platform::Platform<V5::motor::V5MotorController> plat(platform::PlatformMotorConfig(config, 4));
 
-int ports[] = {1, 2, 3 ,4};
+VEX5_PORT_t ports[] = {(VEX5_PORT_t)1, (VEX5_PORT_t)2, (VEX5_PORT_t)3, (VEX5_PORT_t)4};
 
 void setup() {  
     Vex5.begin();
-    plat.init(util::Array<int>(ports, 4));
+    plat.init(util::Array<VEX5_PORT_t>(ports, 4));
     
 }
 

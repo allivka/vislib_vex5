@@ -25,7 +25,7 @@ public:
             return util::Error(util::ErrorCode::invalidArgument, "Cannot apply speeds set to controller set as they have different sizes");
         }
         for(size_t i = 0; i < controllers.Size(); i++) {
-            util::Error err = controllers.at(i).setSpeed(speeds.at(i));
+            util::Error err = controllers.at(i)().setSpeed(speeds.at(i));
             if(err != util::ErrorCode::success) {
                 err.msg = "Could not apply speed to motor controller, error encountered: " + err.msg;
                 return err;
@@ -49,9 +49,9 @@ public:
     }
     
     ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    void init(const util::Array<int>& ports) {
+    template<typename C> void init(const util::Array<C>& ports) {
         for(size_t i = 0; i < controllers.Size(); i++) {
-            controllers.at(i).init(ports.at(i));
+            controllers.at(i)().init(ports.at(i)());
         }
     }
 };

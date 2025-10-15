@@ -14,7 +14,7 @@ public vislib::motor::controllers::InitializationController<VEX5_PORT_t> {
 protected:
     Vex5_Motor motor;
     
-    virtual vislib::util::Error setSpeedRaw(vislib::motor::Speed speed) {
+    virtual vislib::util::Error setSpeedRaw(vislib::motor::Speed speed) override {
         if(motor.setSpeed(speed) == -1) return failedMotorConnectionError;
         return vislib::util::Error();
     }
@@ -22,8 +22,7 @@ public:
     
     using RangedSpeedController::RangedSpeedController;
     
-    ///!!!!!!!!!!!!!
-    V5MotorController() {};
+    V5MotorController() = default;
     
     virtual vislib::util::Error init(VEX5_PORT_t port) {
         if (port < 0 || port > 12) 
