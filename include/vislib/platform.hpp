@@ -48,7 +48,6 @@ public:
         }
     }
     
-    ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     template<typename C> void init(const util::Array<C>& ports) {
         for(size_t i = 0; i < controllers.Size(); i++) {
             controllers.at(i)().init(ports.at(i)());
@@ -59,7 +58,7 @@ public:
 
 namespace calculators {
     
-    PlatformMotorSpeeds calculateLinearSpeed(PlatformMotorConfig conf) {
+    PlatformMotorSpeeds calculateLinearSpeeds(PlatformMotorConfig conf) {
         
     }
 }
