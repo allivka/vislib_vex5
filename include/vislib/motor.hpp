@@ -61,16 +61,16 @@ public:
     using MotorInfoIncluded::MotorInfoIncluded;
     
     virtual util::Error setSpeed(Speed speed) {
-        return setSpeedRaw(info.speedRange.restrict(-speed));
+        return setSpeedRaw(info.speedRange.mapValueFromRange(info.interfaceSpeedRange.restrict(speed * (1 - 2 * info.isReversed ? 1 : 0)), info.interfaceSpeedRange));
     }
 
     virtual bool inSpeedRange(Speed speed) const {
-        return info.speedRange.contains(speed);
+        return info.interfaceSpeedRange.contains(speed);
     }
     
     virtual util::Error setSpeedInRange(Speed speed, SpeedRange range) {
-        if (!range.contains(speed)) return util::Error(util::ErrorCode::invalidArgument, "given speed is not in it's original range");
-        return setSpeed(info.speedRange.mapValueFromRange(speed, range));
+        if (!range.contains(speed)) return util::Error(util::ErrorCode::invalidArgument, "given speed is not in it's stated range");
+        return setSpeed(info.interfaceSpeedRange.mapValueFromRange(speed, range));
     }
 };
 

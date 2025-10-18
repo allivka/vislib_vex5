@@ -8,7 +8,7 @@ namespace vislib::platform {
 using PlatformMotorConfig = util::Array<motor::MotorInfo>;
 using PlatformMotorSpeeds = util::Array<motor::Speed>;
 
-PlatformMotorConfig countAndApplyParallelAxisesForMotors(PlatformMotorConfig config, size_t precision) {
+PlatformMotorConfig updateParallelAxisesForMotors(PlatformMotorConfig config, size_t precision) {
     for(size_t i = 0; i < config.Size(); i++) {
         for(size_t j = 0; j < config.Size(); j++) {
             if(i == j) continue;
@@ -24,6 +24,8 @@ PlatformMotorConfig countAndApplyParallelAxisesForMotors(PlatformMotorConfig con
             }
         }
     }
+    
+    return config;
 }
 
 template<typename Controller> class Platform {
@@ -32,6 +34,7 @@ protected:
     
 public:
     Platform(PlatformMotorConfig configuration) {
+        configuration = updateParallelAxisesForMotors(configuration);
         controllers = util::Array<Controller>(configuration.Size());
         for (size_t i = 0; i < controllers.Size(); i++) {
             controllers.at(i)() = Controller(configuration.at(i));
@@ -40,8 +43,9 @@ public:
     
     util::Error setSpeeds(PlatformMotorSpeeds speeds) {
         if (speeds.Size() != controllers.Size()) {
-            return util::Error(util::ErrorCode::invalidArgument, "Cannot apply speeds set to controller set as they have different sizes");
+            return util::Error(util::ErrorCode::invalidArgument, "Cannot apply speeds set to controller set as there are different amount of them");
         }
+        
         for(size_t i = 0; i < controllers.Size(); i++) {
             util::Error err = controllers.at(i)().setSpeed(speeds.at(i));
             if(err != util::ErrorCode::success) {
@@ -53,13 +57,14 @@ public:
         return util::ErrorCode::success;
     }
     
-    util::Error setSpeedsInRange(PlatformMotorSpeeds speeds, motor::SpeedRange range) {
-        if (speeds.Size() != controllers.Size()) {
-            return util::Error(util::ErrorCode::invalidArgument, "Cannot apply speeds set to controller set as they have different sizes");
+    util::Error setSpeedsInRanges(PlatformMotorSpeeds speeds, util::Array<motor::SpeedRange> ranges) {
+        if (speeds.Size() != controllers.Size() || speeds.Size() != ranges.Size()) {
+            return util::Error(util::ErrorCode::invalidArgument, 
+                "Cannot apply speeds from different ranges set to controller set as there are different amounts of them");
         }
         
         for(size_t i = 0; i < controllers.Size(); i++) {
-            util::Error err = controllers.at(i).setSpeedInRange(speeds.at(i), range);
+            util::Error err = controllers.at(i).setSpeedInRange(speeds.at(i), ranges[i]);
             if(err != util::ErrorCode::success) {
                 err.msg = "Could not apply speed to motor controller, error encountered: " + err.msg;
                 return err;
@@ -74,6 +79,7 @@ public:
             controllers.at(i)().init(ports.at(i)());
         }
     }
+    
 };
 
 
@@ -87,6 +93,8 @@ namespace calculators {
         if(!info.interfaceSpeedRange.contains(speed)) {
             return util::Error(util::ErrorCode::outOfRange, "the given speed is not in the configured motor interface speed range");
         }
+        
+        return cos(angle - info.anglePos) * speed / info.parallelAxisesAmount;
 
     }
     
@@ -95,6 +103,10 @@ namespace calculators {
         
         for(size_t i = 0; i < speeds.Size(); i++) {
             
+            util::Result<motor::Speed> t = calculateMotorLinearSpeed(config[i], angle, speed);
+            if(t) return t.Err();
+            
+            speeds[i] = t;
         }
         
         return speeds;

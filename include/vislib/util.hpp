@@ -87,6 +87,13 @@ public:
         }
     }
     
+    template<size_t N> DefinedArray(const T (&p_data)[N]) {
+        static_assert(N == SIZE, "Array size must match DefinedArray size");
+        for(size_t i = 0; i < SIZE; i++) {
+            data[i] = p_data[i];
+        }
+    }
+    
     DefinedArray(const T (&p_data)[SIZE]) {
         for(size_t i = 0; i < SIZE; i++) {
             data[i] = p_data[i];
@@ -120,7 +127,7 @@ public:
         return data[index];
     }
     
-    Result<T>& at(size_t index) {
+    Result<T&> at(size_t index) {
         if (index >= SIZE) {
             throw Error(ErrorCode::indexOutOfRange, "Index out of range in 'defined array' element access");
         }
@@ -138,7 +145,6 @@ public:
     constexpr bool empty() const { return SIZE == 0; }
     
 };
-
 template<typename T> class Array {
 private:
     size_t size = 0;
@@ -150,6 +156,12 @@ public:
 
     Array(size_t p_size) : size(p_size), data(new T[size]) { }
     
+    template<size_t N> explicit Array(const T (&p_data)[N]) : size(N), data(new T[size]) {
+        for(size_t i = 0; i < size; i++) {
+            data[i] = p_data[i];
+        }
+    }
+    
     Array(const T p_data[], size_t p_size) : size(p_size), data(new T[size]) {
         for(size_t i = 0; i < size; i++) {
             data[i] = p_data[i];
@@ -157,7 +169,6 @@ public:
     }
     
     Array(const Array<T>& other) : size(other.size), data(new T[size]) {
-        
         for(size_t i = 0; i < size; i++) {
             data[i] = other.data[i];
         }
@@ -282,7 +293,6 @@ public:
     }
     
 };
-
 class String : public Array<char> {
 private:
     static size_t strlen(const char* str) {
@@ -523,6 +533,10 @@ public:
 
     operator E() const {
         return err;
+    }
+    
+    operator bool() const {
+        return errorFlag;
     }
 
     T operator()() {
