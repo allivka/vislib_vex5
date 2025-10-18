@@ -33,8 +33,8 @@ protected:
     util::Array<Controller> controllers;
     
 public:
-    Platform(PlatformMotorConfig configuration) {
-        configuration = updateParallelAxisesForMotors(configuration);
+    Platform(PlatformMotorConfig configuration, size_t parallelismPrecision = 0) {
+        configuration = updateParallelAxisesForMotors(configuration, parallelismPrecision);
         controllers = util::Array<Controller>(configuration.Size());
         for (size_t i = 0; i < controllers.Size(); i++) {
             controllers.at(i)() = Controller(configuration.at(i));
