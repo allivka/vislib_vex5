@@ -18,6 +18,8 @@ public:
     SpeedRange interfaceSpeedRange;
     bool isReversed = false;
     
+    size_t parallelAxisesAmount = 1;
+    
     MotorInfo() = default;
     
     MotorInfo(double p_ap, double p_d, double p_wr, SpeedRange p_speed, SpeedRange p_intSpeed, bool p_reversed = false)
@@ -59,7 +61,7 @@ public:
     using MotorInfoIncluded::MotorInfoIncluded;
     
     virtual util::Error setSpeed(Speed speed) {
-        return setSpeedRaw(info.speedRange.restrict(speed));
+        return setSpeedRaw(info.speedRange.restrict(-speed));
     }
 
     virtual bool inSpeedRange(Speed speed) const {

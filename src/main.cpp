@@ -9,11 +9,12 @@ motor::SpeedRange motorInterfaceAngularSpeedRange(motorUseSpeedRange.mapValueToR
 double wheelR = 0.1;
 double motorDistance = 0.3;
 
-platform::Platform<V5::motor::V5MotorController> plat(platform::PlatformMotorConfig((motor::MotorInfo[]){motor::MotorInfo(-90, motorDistance, wheelR, motorUseSpeedRange, motorInterfaceAngularSpeedRange),
-                             motor::MotorInfo(0, motorDistance, wheelR, motorUseSpeedRange, motorInterfaceAngularSpeedRange),
-                             motor::MotorInfo(90, motorDistance, wheelR, motorUseSpeedRange, motorInterfaceAngularSpeedRange),
-                             motor::MotorInfo(180, motorDistance, wheelR, motorUseSpeedRange, motorInterfaceAngularSpeedRange)
-                            }, 4));
+platform::Platform<V5::motor::V5MotorController> plat(platform::PlatformMotorConfig((motor::MotorInfo[]){
+    motor::MotorInfo(-90, motorDistance, wheelR, motorUseSpeedRange, motorInterfaceAngularSpeedRange),
+    motor::MotorInfo(0, motorDistance, wheelR, motorUseSpeedRange, motorInterfaceAngularSpeedRange),
+    motor::MotorInfo(90, motorDistance, wheelR, motorUseSpeedRange, motorInterfaceAngularSpeedRange),
+    motor::MotorInfo(180, motorDistance, wheelR, motorUseSpeedRange, motorInterfaceAngularSpeedRange)
+}, 4));
 
 void setup() {  
     Vex5.begin();

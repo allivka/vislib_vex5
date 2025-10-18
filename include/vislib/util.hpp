@@ -2,8 +2,20 @@
 #define UTIL_HPP
 
 #include "types.hpp"
+#include <math.h>
 
 namespace vislib::util {
+
+template <typename T> T abs(T x) {
+    if(x < 0) return x * -1;
+    return x;
+}
+
+template <typename T> uc_t sign(T x) {
+    if(x < 0) return -1;
+    if(x > 0) return 1;
+    return 0;
+}
 
 template <typename T> class Range {
 
@@ -54,8 +66,10 @@ enum class ErrorCode {
     failure,
     invalidArgument,
     failedConnection,
+    outOfRange,
     indexOutOfRange,
-    emptyArray
+    emptyArray,
+    zeroDivision
 };
 
 class Error;

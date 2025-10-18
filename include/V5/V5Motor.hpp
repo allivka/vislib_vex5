@@ -18,6 +18,7 @@ protected:
         if(motor.setSpeed(speed) == -1) return failedMotorConnectionError;
         return vislib::util::Error();
     }
+    
 public:
     
     using RangedSpeedController::RangedSpeedController;
