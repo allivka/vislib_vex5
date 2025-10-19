@@ -94,7 +94,7 @@ namespace calculators {
             return util::Error(util::ErrorCode::outOfRange, "the given speed is not in the configured motor interface speed range");
         }
         
-        return cos(angle - info.anglePos) * speed / info.parallelAxisesAmount;
+        return cos(angle - info.anglePos) * speed / info.parallelAxisesAmount / info.wheelR;
 
     }
     
