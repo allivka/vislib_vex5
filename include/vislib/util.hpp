@@ -163,7 +163,7 @@ public:
     
 };
 template<typename T> class Array {
-private:
+protected:
     size_t size = 0;
     T *data = nullptr;
     
@@ -185,9 +185,15 @@ public:
         }
     }
     
-    Array(const Array<T>& other) : size(other.size), data(new T[size]) {
-        for(size_t i = 0; i < size; i++) {
-            data[i] = other.data[i];
+    Array(const Array<T>& other) : size(0), data(nullptr) {
+        if (other.size > 0 && other.data != nullptr) {
+            data = new T[other.size];
+            if (data) {
+                size = other.size;
+                for(size_t i = 0; i < size; i++) {
+                    data[i] = other.data[i];
+                }
+            }
         }
     }
     
@@ -203,23 +209,24 @@ public:
     Array<T>& operator=(const Array<T>& other) {
         if (this == &other) return *this;
         
-        if (other.data == nullptr || other.size == 0) {
-            clear();
-            return *this;
+        T* newData = nullptr;
+        size_t newSize = 0;
+        
+        if (other.size > 0 && other.data != nullptr) {
+            newData = new T[other.size];
+            if (newData) {
+                newSize = other.size;
+                for(size_t i = 0; i < newSize; i++) {
+                    newData[i] = other.data[i];
+                }
+            }
         }
         
-        T *newData = new T[other.size];
-        
-        for(size_t i = 0; i < other.size; i++) {
-            newData[i] = other.data[i];
-        }
-        
-        delete [] data;
+        delete[] data;
         data = newData;
-        size = other.size;
+        size = newSize;
         
         return *this;
-        
     }
     
     Array<T>& operator=(Array<T>&& other) {
@@ -336,6 +343,22 @@ public:
     using Array<char>::operator=;
     
     const char* c_str() const {
+        if(this->empty()) return "";
+        
+        if(data[size - 1] != '\0') {
+            
+            char *result = new char[size + 1];
+            
+            for (size_t i = 0; i < size; i++) {
+                result[i] = data[i];
+            }
+            
+            result[size] = '\0';
+            
+            return result;
+            
+        }
+        
         return Data();
     }
     

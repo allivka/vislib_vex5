@@ -19,8 +19,6 @@ platform::PlatformMotorConfig config({
 
 platform::Platform<V5::motor::V5MotorController> plat(config);
 
-
-
 void setup() {  
     Vex5.begin();
     plat.init(util::Array<VEX5_PORT_t>({(VEX5_PORT_t)1, (VEX5_PORT_t)2, (VEX5_PORT_t)3, (VEX5_PORT_t)4}));

@@ -11,23 +11,17 @@ using PlatformMotorSpeeds = util::Array<motor::Speed>;
 
 PlatformMotorConfig updateParallelAxisesForMotors(PlatformMotorConfig config, size_t precision) {
     for(size_t i = 0; i < config.Size(); i++) {
-        for(size_t j = 0; j < config.Size(); j++) {
-            if(i == j) continue;
-            
-            if(j < i && config[j].parallelAxisesAmount != 1) {
-                config[i].parallelAxisesAmount = config[j].parallelAxisesAmount;
-                continue;
-            }
-            
-            double diff = round(util::abs(config[i].anglePos - config[j].anglePos) * pow(10, precision));
-            if(diff == 0 || diff == 180) {
-                config[i].parallelAxisesAmount++;
-            }
-        }
+        config[i].parallelAxisesAmount = 1;
     }
     
     for(size_t i = 0; i < config.Size(); i++) {
-        if(config[i].parallelAxisesAmount != 1) config[i].parallelAxisesAmount--;
+        for(size_t j = i + 1; j < config.Size(); j++) {
+            double diff = round(abs(config[i].anglePos - config[j].anglePos) * pow(10, precision));
+            if(diff == 0 || diff == 180) {
+                config[i].parallelAxisesAmount++;
+                config[j].parallelAxisesAmount++;
+            }
+        }
     }
     
     return config;
@@ -82,16 +76,19 @@ public:
     template<typename C> util::Error init(const util::Array<C>& ports) {
         for(size_t i = 0; i < controllers.Size(); i++) {
             
-            if (controllers.at(i)) {
+            auto t = controllers.at(i);
+            auto p = ports.at(i);
+            
+            if (t.isError()) {
                 return util::Error(util::ErrorCode::initFailed, 
                     "failed initializing one of the platform motors, invalid motor controller with index" 
-                    + util::String(ultoa(i, nullptr, 10)) + ": " + controllers.at(i).Err().msg);
+                    + util::String(ultoa(i, nullptr, 10)) + ": " + t.Err().msg);
             }
             
-            if (ports.at(i)) {
-                return util::Error(util::ErrorCode::initFailed, 
+            if (p.isError()) {
+                return util::Error(util::ErrorCode::invalidArgument, 
                     "failed initializing one of the platform motors, invalid port array was given at index " 
-                    + util::String(ultoa(i, nullptr, 10)) + " : " + ports.at(i).Err().msg);
+                    + util::String(ultoa(i, nullptr, 10)) + " : " + p.Err().msg);
             }
             
             auto e = controllers.at(i)().init(ports.at(i));
