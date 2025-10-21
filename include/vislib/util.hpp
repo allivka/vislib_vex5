@@ -17,6 +17,22 @@ template <typename T> uc_t sign(T x) {
     return 0;
 }
 
+double cosDegrees(double angle) {
+    return cos(angle * M_PI / 180);
+}
+
+double sinDegrees(double angle) {
+    return sin(angle * M_PI / 180);
+}
+
+double deg2Rad(double angle) {
+    return angle * M_PI / 180;
+}
+
+double rad2Deg(double angle) {
+    return angle * 180 / M_PI;
+}
+
 template <typename T> class Range {
 
 public:

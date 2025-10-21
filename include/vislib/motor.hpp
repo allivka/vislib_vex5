@@ -57,11 +57,18 @@ public:
 class RangedSpeedController : public MotorInfoIncluded, public SpeedController {
 protected:
     virtual util::Error setSpeedRaw(Speed) = 0;
+    virtual util::Result<Speed> getSpeedRaw() const = 0;
 public:
     using MotorInfoIncluded::MotorInfoIncluded;
     
     virtual util::Error setSpeed(Speed speed) {
-        return setSpeedRaw(info.speedRange.mapValueFromRange(info.interfaceSpeedRange.restrict(speed * (1 - 2 * info.isReversed ? 1 : 0)), info.interfaceSpeedRange));
+        return setSpeedRaw(info.speedRange.mapValueFromRange(info.interfaceSpeedRange.restrict(info.isReversed ? -speed : speed), info.interfaceSpeedRange));
+    }
+    
+    virtual util::Result<Speed> getSpeed() const {
+        util::Result<Speed> rawSpeed = getSpeedRaw();
+        if(rawSpeed) return rawSpeed;
+        return info.speedRange.mapValueToRange(rawSpeed(), info.interfaceSpeedRange);
     }
 
     virtual bool inSpeedRange(Speed speed) const {

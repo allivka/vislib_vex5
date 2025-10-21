@@ -25,10 +25,6 @@ void setup() {
     Vex5.begin();
     plat.init(util::Array<VEX5_PORT_t>({(VEX5_PORT_t)1, (VEX5_PORT_t)2, (VEX5_PORT_t)3, (VEX5_PORT_t)4}));
     Serial.begin(9600);
-    Serial.println((int)plat.Controllers()[0].Info().parallelAxisesAmount);
-    Serial.println((int)plat.Controllers()[1].Info().parallelAxisesAmount);
-    Serial.println((int)plat.Controllers()[2].Info().parallelAxisesAmount);
-    Serial.println((int)plat.Controllers()[3].Info().parallelAxisesAmount);
     // delay(5000);
     
 }
@@ -39,6 +35,15 @@ void go(double angle, double speed) {
         Serial.println(("Ooops, something went wrong in calculating speeds for linear movement of the platform: " + speeds.Err().msg).c_str());
         return;
     }
+    
+    Serial.print("1: ");
+    Serial.print(speeds()[0]);
+    Serial.print("; 2: ");
+    Serial.print(speeds()[1]);
+    Serial.print("; 3: ");
+    Serial.print(speeds()[2]);
+    Serial.print("; 4: ");
+    Serial.println(speeds()[3]);
     
     auto err = plat.setSpeeds(speeds);
     

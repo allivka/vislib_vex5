@@ -2,6 +2,7 @@
 #define PLATFORM_HPP
 
 #include "motor.hpp"
+#include <stdlib.h>
 
 namespace vislib::platform {
 
@@ -82,17 +83,23 @@ public:
         for(size_t i = 0; i < controllers.Size(); i++) {
             
             if (controllers.at(i)) {
-                return util::Error(util::ErrorCode::initFailed, "failed initializing one of the platform motors, invalid motor controller given: " + controllers.at(i).Err().msg);
+                return util::Error(util::ErrorCode::initFailed, 
+                    "failed initializing one of the platform motors, invalid motor controller with index" 
+                    + util::String(ultoa(i, nullptr, 10)) + ": " + controllers.at(i).Err().msg);
             }
             
             if (ports.at(i)) {
-                return util::Error(util::ErrorCode::initFailed, "failed initializing one of the platform motors, invalid port array was given: " + ports.at(i).Err().msg);
+                return util::Error(util::ErrorCode::initFailed, 
+                    "failed initializing one of the platform motors, invalid port array was given at index " 
+                    + util::String(ultoa(i, nullptr, 10)) + " : " + ports.at(i).Err().msg);
             }
             
             auto e = controllers.at(i)().init(ports.at(i));
             
             if(e) {
-                return util::Error(util::ErrorCode::initFailed, "failed initializing one of the platform motors, failed motor controller initialization: " + e.msg);
+                return util::Error(util::ErrorCode::initFailed, 
+                    "failed initializing one of the platform motors, failed motor controller initialization at index "
+                    + util::String(ultoa(i, nullptr, 10)) + " and port with value " + util::String(ultoa(ports.at(i)(), nullptr, 10)) + ": " + e.msg);
             }
         }
         
@@ -116,7 +123,7 @@ namespace calculators {
             return util::Error(util::ErrorCode::outOfRange, "the given speed is not in the configured motor interface speed range");
         }
         
-        return cos(angle - info.anglePos) * speed / info.parallelAxisesAmount / info.wheelR;
+        return util::cosDegrees(angle - info.anglePos) * speed / info.parallelAxisesAmount / info.wheelR;
 
     }
     
