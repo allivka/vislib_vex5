@@ -24,6 +24,9 @@ public:
     using RangedSpeedController::RangedSpeedController;
     
     V5MotorController() = default;
+    V5MotorController(const V5MotorController&) = default;
+    V5MotorController(V5MotorController&&) = default;
+    V5MotorController& operator=(const V5MotorController&) = default;
     
     virtual vislib::util::Error init(VEX5_PORT_t port) {
         if (port < 0 || port > 12) 

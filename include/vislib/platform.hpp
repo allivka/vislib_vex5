@@ -25,6 +25,10 @@ PlatformMotorConfig updateParallelAxisesForMotors(PlatformMotorConfig config, si
         }
     }
     
+    for(size_t i = 0; i < config.Size(); i++) {
+        if(config[i].parallelAxisesAmount != 1) config[i].parallelAxisesAmount--;
+    }
+    
     return config;
 }
 
@@ -74,14 +78,32 @@ public:
         return util::ErrorCode::success;
     }
     
-    template<typename C> void init(const util::Array<C>& ports) {
+    template<typename C> util::Error init(const util::Array<C>& ports) {
         for(size_t i = 0; i < controllers.Size(); i++) {
-            controllers.at(i)().init(ports.at(i)());
+            
+            if (controllers.at(i)) {
+                return util::Error(util::ErrorCode::initFailed, "failed initializing one of the platform motors, invalid motor controller given: " + controllers.at(i).Err().msg);
+            }
+            
+            if (ports.at(i)) {
+                return util::Error(util::ErrorCode::initFailed, "failed initializing one of the platform motors, invalid port array was given: " + ports.at(i).Err().msg);
+            }
+            
+            auto e = controllers.at(i)().init(ports.at(i));
+            
+            if(e) {
+                return util::Error(util::ErrorCode::initFailed, "failed initializing one of the platform motors, failed motor controller initialization: " + e.msg);
+            }
         }
+        
+        return util::ErrorCode::success;
+    }
+    
+    const util::Array<Controller>& Controllers() const {
+        return controllers;
     }
     
 };
-
 
 namespace calculators {
     

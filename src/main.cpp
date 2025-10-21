@@ -25,7 +25,11 @@ void setup() {
     Vex5.begin();
     plat.init(util::Array<VEX5_PORT_t>({(VEX5_PORT_t)1, (VEX5_PORT_t)2, (VEX5_PORT_t)3, (VEX5_PORT_t)4}));
     Serial.begin(9600);
-    delay(5000);
+    Serial.println((int)plat.Controllers()[0].Info().parallelAxisesAmount);
+    Serial.println((int)plat.Controllers()[1].Info().parallelAxisesAmount);
+    Serial.println((int)plat.Controllers()[2].Info().parallelAxisesAmount);
+    Serial.println((int)plat.Controllers()[3].Info().parallelAxisesAmount);
+    // delay(5000);
     
 }
 
@@ -53,7 +57,8 @@ ull_t sectionTime = 2000;
 
 void loop() {
     move(0, speed, sectionTime);
-    move(90, speed, sectionTime);
-    move(180, speed, sectionTime);
-    move(-90, speed, sectionTime);
+    // move(90, speed, sectionTime);
+    // move(180, speed, sectionTime);
+    // move(-90, speed, sectionTime);
+    // plat.setSpeeds(platform::PlatformMotorSpeeds({motor::Speed(3000), motor::Speed(3000), motor::Speed(3000), motor::Speed(3000)}));
 }

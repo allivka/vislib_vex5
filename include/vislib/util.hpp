@@ -64,6 +64,7 @@ public:
 enum class ErrorCode {
     success,
     failure,
+    initFailed,
     invalidArgument,
     failedConnection,
     outOfRange,

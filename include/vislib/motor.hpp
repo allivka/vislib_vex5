@@ -37,7 +37,7 @@ public:
     MotorInfoIncluded() = default;
     
     MotorInfoIncluded(const MotorInfo& p_info) : info(p_info) {}
-    MotorInfo Info() {
+    MotorInfo Info() const {
         return info;
     }
 };
