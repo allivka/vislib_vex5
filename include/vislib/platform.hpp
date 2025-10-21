@@ -3,6 +3,7 @@
 
 #include "motor.hpp"
 #include <stdlib.h>
+#include <stdio.h>
 
 namespace vislib::platform {
 
@@ -32,11 +33,13 @@ protected:
     util::Array<Controller> controllers;
     
 public:
+
     Platform(PlatformMotorConfig configuration, size_t parallelismPrecision = 0) {
         configuration = updateParallelAxisesForMotors(configuration, parallelismPrecision);
         controllers = util::Array<Controller>(configuration.Size());
         for (size_t i = 0; i < controllers.Size(); i++) {
-            controllers.at(i)() = Controller(configuration.at(i));
+            Controller ctrl(configuration[i]);
+            controllers[i] = ctrl;
         }
     }
     
@@ -74,6 +77,7 @@ public:
     }
     
     template<typename C> util::Error init(const util::Array<C>& ports) {
+        
         for(size_t i = 0; i < controllers.Size(); i++) {
             
             auto t = controllers.at(i);
@@ -82,13 +86,13 @@ public:
             if (t.isError()) {
                 return util::Error(util::ErrorCode::initFailed, 
                     "failed initializing one of the platform motors, invalid motor controller with index" 
-                    + util::String(ultoa(i, nullptr, 10)) + ": " + t.Err().msg);
+                    + util::to_string(i) + ": " + t.Err().msg);
             }
             
             if (p.isError()) {
                 return util::Error(util::ErrorCode::invalidArgument, 
                     "failed initializing one of the platform motors, invalid port array was given at index " 
-                    + util::String(ultoa(i, nullptr, 10)) + " : " + p.Err().msg);
+                    + util::to_string(i) + " : " + p.Err().msg);
             }
             
             auto e = controllers.at(i)().init(ports.at(i));
@@ -96,7 +100,7 @@ public:
             if(e) {
                 return util::Error(util::ErrorCode::initFailed, 
                     "failed initializing one of the platform motors, failed motor controller initialization at index "
-                    + util::String(ultoa(i, nullptr, 10)) + " and port with value " + util::String(ultoa(ports.at(i)(), nullptr, 10)) + ": " + e.msg);
+                    + util::to_string(i) + " and port with value " + util::to_string(static_cast<unsigned long long>(p())) + ": " + e.msg);
             }
         }
         
