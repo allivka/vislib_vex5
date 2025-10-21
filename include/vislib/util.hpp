@@ -11,7 +11,6 @@ template <typename T> T abs(T x) {
     return x;
 }
 
-// use a signed return type for sign
 template <typename T> int sign(T x) {
     if (x < (T)0) return -1;
     if (x > (T)0) return 1;
@@ -537,6 +536,16 @@ template <typename T> class Result : public ReturnResult<T, Error> {
 public:
     Result(T v) : ReturnResult<T, Error>(v) {}
     Result(Error e) : ReturnResult<T, Error>(e) {}
+};
+
+template <typename T> class Result<T&> : public ReturnResult<T*, Error> {
+public:
+    Result(T& v) : ReturnResult<T*, Error>(&v) {}
+    Result(Error e) : ReturnResult<T*, Error>(e) {}
+    
+    T& operator()() const { return *(this->value); }
+
+    T& Value() const { return *(this->value); }
 };
 
 }

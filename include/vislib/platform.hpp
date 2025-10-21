@@ -95,7 +95,7 @@ public:
                     + util::to_string(i) + " : " + p.Err().msg);
             }
             
-            auto e = controllers.at(i)().init(ports.at(i));
+            auto e = t().init(p());
             
             if(e) {
                 return util::Error(util::ErrorCode::initFailed, 
