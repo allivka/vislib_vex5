@@ -23,9 +23,9 @@ protected:
     }
     
     virtual vislib::util::Result<vislib::motor::Speed> getSpeedRaw() const override {
-        vislib::motor::Speed speed;
+        int16_t speed;
         if(motor.getSpeed(speed) == -1) return failedMotorConnectionError();
-        return speed;
+        return static_cast<vislib::motor::Speed>(speed);
     }
     
 public:
