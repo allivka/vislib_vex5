@@ -1,5 +1,4 @@
-#ifndef PLATFORM_HPP
-#define PLATFORM_HPP
+#pragma once
 
 #include "motor.hpp"
 #include <stdlib.h>
@@ -125,7 +124,7 @@ namespace calculators {
         }
         
         return util::cosDegrees(angle - info.anglePos) * speed / info.parallelAxisesAmount / info.wheelR;
-
+        
     }
     
     util::Result<PlatformMotorSpeeds> calculatePlatformLinearSpeeds(PlatformMotorConfig config, double angle, motor::Speed speed) {
@@ -141,8 +140,7 @@ namespace calculators {
         
         return speeds;
     }
-}
-    
-}
+} // namespace vislib::platform::calculators
 
-#endif
+} //namespace vislib::platform
+

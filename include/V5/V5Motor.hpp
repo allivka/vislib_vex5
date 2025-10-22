@@ -1,5 +1,4 @@
-#ifndef V5_MOTOR_HPP
-#define V5_MOTOR_HPP
+#pragma once
 
 #include <vislib/vislib.hpp>
 #include "Vex5.h"
@@ -47,6 +46,4 @@ public:
     
 };
 
-}
-
-#endif
+} //namespace V5::motor

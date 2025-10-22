@@ -1,7 +1,6 @@
-#ifndef MOTOR_HPP
-#define MOTOR_HPP
+#pragma once
 
-#include "util.hpp"
+#include "util/util.hpp"
 
 namespace vislib::motor {
 
@@ -84,8 +83,6 @@ public:
     }
 };
 
-}
+} //namespace vislib::motor::controllers
 
-}
-
-#endif
+} //namespace vislib::motor

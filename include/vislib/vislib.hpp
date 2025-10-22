@@ -1,8 +1,5 @@
-#ifndef VISLIB_HPP
-#define VISLIB_HPP
+#pragma once
 
-#include "util.hpp"
+#include "util/util.hpp"
 #include "motor.hpp"
 #include "platform.hpp"
-
-#endif
