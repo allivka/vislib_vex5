@@ -6,7 +6,11 @@ template <typename T> constexpr T&& move(T& t) noexcept {
     return static_cast<T&&>(t);
 }
 
-template<typename T> class UniquePtr {
+template <typename T> void deleter(T *ptr) {
+    delete ptr;
+}
+
+template<typename T, void (*DELETER)(T*) = deleter> class UniquePtr {
 protected:
     T *ptr = nullptr;
 
@@ -25,7 +29,7 @@ public:
     }
 
     ~UniquePtr() {
-        delete ptr;
+        DELETER(ptr);
     }
 
     T& operator*() const {
@@ -43,7 +47,7 @@ public:
     UniquePtr<T>& operator=(const UniquePtr&) = delete;
 
     UniquePtr<T>& operator=(UniquePtr&& other) {
-        delete ptr;
+        DELETER(ptr);
         ptr = other.ptr;
         other.ptr = nullptr;
         return *this;
@@ -67,7 +71,7 @@ public:
     }
 
     void reset(T *new_ptr = nullptr) {
-        delete ptr;
+        DELETER(ptr);
         ptr = new_ptr;
     }
 
