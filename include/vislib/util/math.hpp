@@ -1,6 +1,8 @@
 #pragma once
 
 #include <math.h>
+#include "containers.hpp"
+#include "memory.hpp"
 
 namespace vislib::util {
 
@@ -70,5 +72,144 @@ public:
     }
 
 };
+
+template <typename T> class Vector {
+protected:
+    Array<T> data;
+public:
+    Vector() = default;
+    Vector(const Vector&) = default;
+    Vector(Vector&&) = default;
+    Vector& operator=(const Vector&) = default;
+    Vector& operator=(Vector&&) = default;
+    
+    explicit Vector(const Array<T>& arr) : data(arr) { }
+    explicit Vector(Array<T>&& arr) : data(util::move(arr)) { }
+    
+    operator Array<T>&() {
+        return data;
+    }
+    
+    operator const Array<T>&() const {
+        return data;
+    }
+    
+    Array<T>& raw() {
+        return data;
+    }
+    
+    const Array<T>& raw() const {
+        return data;
+    }
+    
+    Vector operator+(const Vector& other) const {
+        Vector<T> temp = *this;
+        for(size_t i = 0; i < min(temp.Size(), other.Size()); i++) {
+            temp.at(i) += other.at(i);
+        }
+        return temp;
+    }
+    
+    Vector& operator+=(const Vector& other) {
+        for(size_t i = 0; i < min(this->Size(), other.Size()); i++) {
+            this->at(i) += other.at(i);
+        }
+        return *this;
+    }
+    
+    Vector operator-(const Vector& other) const {
+        Vector<T> temp = *this;
+        for(size_t i = 0; i < min(temp.Size(), other.Size()); i++) {
+            temp.at(i) -= other.at(i);
+        }
+        return temp;
+    }
+    
+    Vector& operator-=(const Vector& other) {
+        for(size_t i = 0; i < min(this->Size(), other.Size()); i++) {
+            this->at(i) -= other.at(i);
+        }
+        return *this;
+    }
+    
+    Vector operator*(const T& value) const {
+        Vector<T> temp = *this;
+        for(size_t i = 0; i < temp.Size(); i++) {
+            temp.at(i) *= value;
+        }
+        return temp;
+    }
+    
+    Vector& operator*=(const T& value) {
+        for(size_t i = 0; i < this->Size(); i++) {
+            this->at(i) *= value;
+        }
+        return *this;
+    }
+    
+    Vector operator/(const T& value) const {
+        if(value == 0) return *this;
+        
+        Vector<T> temp = *this;
+        for(size_t i = 0; i < temp.Size(); i++) {
+            temp.at(i) /= value;
+        }
+        
+        return temp;
+    }
+    
+    Vector& operator/=(const T& value) {
+        if(value == 0) return *this;
+        
+        for(size_t i = 0; i < this->Size(); i++) {
+            this->at(i) /= value;
+        }
+        
+        return *this;
+    }
+    
+    Vector operator-() const {
+        Vector<T> temp = *this;
+        for(size_t i = 0; i < temp.Size(); i++) {
+            temp.at(i) = -temp.at(i);
+        }
+        return temp;
+    }
+    
+    double module() const {
+        double buffer = 0;
+        
+        for(size_t i = 0; i < this->Size(); i++) {
+            buffer += this->at(i) * this->at(i);
+        }
+        
+        return sqrt(buffer);
+        
+    }
+    
+    double dot(const Vector& other) const {
+        double buffer = 0;
+        
+        for(size_t i = 0; i < min(other.Size(), this->Size()); i++) {
+            buffer += this->at(i) * other.at(i);
+        }
+        
+        return buffer;
+    }
+    
+    Vector normal() const {
+        return *this / this->module();
+    }
+    
+    void normalize() {
+        auto m = this->module();
+        if (m != 0) *this /= m;
+    }
+    
+};
+
+template<typename T> Vector<T> operator*(const T& val, const Vector<T>& vec) {
+    return vec * val;
+}
 
 } //namespace vislib::util

@@ -2,6 +2,10 @@
 
 namespace vislib::util {
 
+template <typename T> constexpr T&& move(T& t) noexcept {
+    return static_cast<T&&>(t);
+}
+
 template<typename T> class UniquePtr {
 protected:
     T *ptr = nullptr;
