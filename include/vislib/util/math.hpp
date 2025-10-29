@@ -6,15 +6,35 @@
 
 namespace vislib::util {
 
-template <typename T> T abs(T x) {
+template <typename T> T abs(const T& x) {
     if (x < (T)0) return x * (T)-1;
     return x;
 }
 
-template <typename T> int sign(T x) {
+template <typename T> c_t sign(const T& x) {
     if (x < (T)0) return -1;
     if (x > (T)0) return 1;
     return 0;
+}
+
+template <typename T> T min(const T& x, const T& y) {
+    if(x < y) return x;
+    return y;
+}
+
+template <typename T> T max(const T& x, const T& y) {
+    if(x > y) return x;
+    return y;
+}
+
+template <typename T> T minEq(const T& x, const T& y) {
+    if(x <= y) return x;
+    return y;
+}
+
+template <typename T> T maxEq(const T& x, const T& y) {
+    if(x >= y) return x;
+    return y;
 }
 
 double cosDegrees(double angle) {

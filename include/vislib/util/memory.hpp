@@ -6,6 +6,12 @@ template <typename T> constexpr T&& move(T& t) noexcept {
     return static_cast<T&&>(t);
 }
 
+template <typename T> void swap(T& x, T& y) {
+    T temp = move(x);
+    x = move(y);
+    y = move(temp);
+}
+
 template <typename T> void deleter(T *ptr) {
     delete ptr;
 }
