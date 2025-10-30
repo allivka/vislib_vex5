@@ -1,6 +1,6 @@
 {
   "name": "vislib_vex5",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "vislib library with simple vex5 adaption including vex5 library",
   "keywords": "vex5, vislib",
   "repository":
@@ -20,8 +20,8 @@
     "includeDir": "include"
   },
   "dependencies": {
-    "alivka/vislib": "0.0.3",
-    "alivka/vex5": "0.9.2"
+    "alivka/vislib": "*",
+    "alivka/vex5": "*"
   },
   "frameworks": "Arduino",
   "platforms": "atmelavr"
