@@ -20,8 +20,8 @@
     "includeDir": "include"
   },
   "dependencies": {
-    "alivka/vislib": "~0.0.1",
-    "alivka/vex5": "0.0.1"
+    "alivka/vislib": "*",
+    "alivka/vex5": "*"
   },
   "frameworks": "Arduino",
   "platforms": "atmelavr"
