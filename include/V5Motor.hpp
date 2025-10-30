@@ -1,7 +1,7 @@
 #pragma once
 
-#include <vislib/vislib.hpp>
-#include "Vex5.h"
+#include <vislib.hpp>
+#include <Vex5.h>
 
 namespace V5::motor {
 

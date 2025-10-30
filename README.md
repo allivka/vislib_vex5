@@ -2,7 +2,7 @@
 
 vislib library with simple vex5 adaption including vex5 library
 
-## version: 0.0.2
+## version: 0.0.6
 
 ## installation
 
