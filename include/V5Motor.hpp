@@ -3,10 +3,10 @@
 #include <vislib.hpp>
 #include <Vex5.h>
 
-namespace V5::motor {
+namespace vislib::binds::vex5::motor {
 
 [[nodiscard]] static vislib::util::Error failedMotorConnectionError() noexcept {
-    return {vislib::util::ErrorCode::failedConnection,
+    return {util::ErrorCode::failedConnection,
             "Connection with the Vex5 motor via shield failed"};
 }
 
@@ -16,9 +16,9 @@ public vislib::motor::controllers::InitializationController<VEX5_PORT_t> {
 protected:
     Vex5_Motor motor;
     
-    [[nodiscard]] virtual vislib::util::Error setSpeedRaw(vislib::motor::Speed speed) noexcept override {
+    [[nodiscard]] virtual util::Error setSpeedRaw(vislib::motor::Speed speed) noexcept override {
         if(motor.setSpeed(speed) == -1) return failedMotorConnectionError();
-        return vislib::util::Error();
+        return util::Error();
     }
     
     [[nodiscard]] virtual vislib::util::Result<vislib::motor::Speed> getSpeedRaw() const noexcept override {
@@ -36,12 +36,12 @@ public:
     V5MotorController(V5MotorController&&) = default;
     V5MotorController& operator=(const V5MotorController&) = default;
     
-    [[nodiscard]] virtual vislib::util::Error init(VEX5_PORT_t port) noexcept override {
+    [[nodiscard]] virtual util::Error init(VEX5_PORT_t port) noexcept override {
         if (port < 1 || port > 12) 
-            return {vislib::util::ErrorCode::invalidArgument, "Cannot initialize Vex5 motor controller for motor with port out of range [1, 12]"};
+            return {util::ErrorCode::invalidArgument, "Cannot initialize Vex5 motor controller for motor with port out of range [1, 12]"};
         if (motor.begin(port) == -1) 
             return failedMotorConnectionError();
-        return vislib::util::ErrorCode::success;
+        return util::ErrorCode::success;
     }
     
 };
