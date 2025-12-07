@@ -23,7 +23,7 @@ protected:
     
     [[nodiscard]] virtual vislib::util::Result<vislib::motor::Speed> getSpeedRaw() const noexcept override {
         int16_t speed;
-        if(motor.getSpeed(speed) == -1) return failedMotorConnectionError();
+        if(static_cast<Vex5_Motor>(motor).getSpeed(speed) == -1) return failedMotorConnectionError();
         return static_cast<vislib::motor::Speed>(speed);
     }
     
