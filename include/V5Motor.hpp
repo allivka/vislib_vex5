@@ -1,12 +1,12 @@
 #pragma once
 
-#include <vislib.hpp>
+#include <vislib_arduino.hpp>
 #include <Vex5.h>
 
-namespace V5::motor {
+namespace vislib::binds::vex5::motor {
 
-[[nodiscard]] static vislib::util::Error failedMotorConnectionError() noexcept {
-    return {vislib::util::ErrorCode::failedConnection,
+[[nodiscard]] static vislib::core::Error failedMotorConnectionError() noexcept {
+    return {core::ErrorCode::failedConnection,
             "Connection with the Vex5 motor via shield failed"};
 }
 
@@ -16,14 +16,16 @@ public vislib::motor::controllers::InitializationController<VEX5_PORT_t> {
 protected:
     Vex5_Motor motor;
     
-    [[nodiscard]] virtual vislib::util::Error setSpeedRaw(vislib::motor::Speed speed) noexcept override {
-        if(motor.setSpeed(speed) == -1) return failedMotorConnectionError();
-        return vislib::util::Error();
+    [[nodiscard]] virtual core::Error setSpeedRaw(vislib::motor::Speed speed) noexcept override {
+        // if(motor.setSpeed(speed) == -1) return failedMotorConnectionError();
+        motor.setSpeed(speed);
+        return {};
     }
     
-    [[nodiscard]] virtual vislib::util::Result<vislib::motor::Speed> getSpeedRaw() const noexcept override {
+    [[nodiscard]] virtual vislib::core::Result<vislib::motor::Speed> getSpeedRaw() const noexcept override {
         int16_t speed;
-        if(motor.getSpeed(speed) == -1) return failedMotorConnectionError();
+        // if(static_cast<Vex5_Motor>(motor).getSpeed(speed) == -1) return failedMotorConnectionError();
+        static_cast<Vex5_Motor>(motor).getSpeed(speed);
         return static_cast<vislib::motor::Speed>(speed);
     }
     
@@ -36,12 +38,13 @@ public:
     V5MotorController(V5MotorController&&) = default;
     V5MotorController& operator=(const V5MotorController&) = default;
     
-    [[nodiscard]] virtual vislib::util::Error init(VEX5_PORT_t port) noexcept override {
+    [[nodiscard]] virtual core::Error init(VEX5_PORT_t port) noexcept override {
         if (port < 1 || port > 12) 
-            return {vislib::util::ErrorCode::invalidArgument, "Cannot initialize Vex5 motor controller for motor with port out of range [1, 12]"};
-        if (motor.begin(port) == -1) 
-            return failedMotorConnectionError();
-        return vislib::util::ErrorCode::success;
+            return {core::ErrorCode::invalidArgument, "Cannot initialize Vex5 motor controller for motor with port out of range [1, 12]"};
+        // if (motor.begin(port) == -1) 
+        //     return failedMotorConnectionError();
+        motor.begin(port);
+        return core::ErrorCode::success;
     }
     
 };
